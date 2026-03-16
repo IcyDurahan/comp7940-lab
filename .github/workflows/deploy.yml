@@ -23,15 +23,20 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
-            cd ~/chatbot_comp7940
 
-            # Ensure required tools exist
+            # Ensure tools exist
             sudo dnf install -y git python3.12
 
-            # Pull latest code
+            # First-time setup: clone repo if not a git repo
+            if [ ! -d ~/chatbot_comp7940/.git ]; then
+              rm -rf ~/chatbot_comp7940
+              git clone https://github.com/IcyDurahan/comp7940-lab.git ~/chatbot_comp7940
+            fi
+
+            cd ~/chatbot_comp7940
             git pull origin main
 
-            # Ensure venv + deps
+            # Python venv + deps
             if [ ! -d venv ]; then
               python3.12 -m venv venv
             fi
